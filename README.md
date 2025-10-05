@@ -1,6 +1,6 @@
 # PVB Livestock Scraper
 
-Small Node.js scraper that fetches the live page at `https://plantvsbrainrotstock.com/live`, extracts the list inside the container `<div class="space-y-2 ml-6">` and appends rows to `pvb_data.csv` every 5 minutes (minutes 00,05,10,...).
+Small Node.js scraper that fetches the live page at `https://plantvsbrainrotstock.com/live`, extracts the latest plant seed stocks and appends rows to `pvb_data.csv`.
 
 Prerequisites
 
