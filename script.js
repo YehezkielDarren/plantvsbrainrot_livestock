@@ -225,12 +225,28 @@ async function scrapeOnce() {
     const esc = (s) => String(s || "").replace(/"/g, '""');
     const lines =
       seeds
-        .map(
-          (s) =>
-            `${ts},"${esc(s.item)}",${esc(s.qty)},"${esc(s.img_alt)}","${esc(
-              s.img_src
-            )}"`
-        )
+        .map((s) => {
+          if (
+            s.item in
+            [
+              "Tomatrio",
+              "Shroombino",
+              "Mr Carrot",
+              "Mango",
+              "Carnivorous Plant",
+              "Cocotank",
+            ]
+          ) {
+            // Special handling for specific items
+            return `${ts},"${esc(s.item) + "@"}",${esc(s.qty)},"${esc(
+              s.img_alt
+            )}","${esc(s.img_src)}"`;
+          } else {
+            return `${ts},"${esc(s.item)}",${esc(s.qty)},"${esc(
+              s.img_alt
+            )}","${esc(s.img_src)}"`;
+          }
+        })
         .join("\n") + "\n";
     fs.appendFileSync(OUTPUT_CSV, lines, "utf8");
     console.log(
