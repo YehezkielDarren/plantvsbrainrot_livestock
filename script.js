@@ -258,19 +258,19 @@ async function scrapeOnce() {
   }
 }
 
-// Function to calculate next stock refresh time + 1 minute
+// Function to calculate next stock refresh time + 45 seconds
 function getNextStockRefreshTime() {
   const now = new Date();
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
 
   // Stock refreshes every 5 minutes at :00, :05, :10, :15, etc.
-  // We want to run 1 minute after that: :01, :06, :11, :16, etc.
+  // We want to run 45 seconds after that: :00:45, :05:45, :10:45, :15:45, etc.
   const nextRefreshMinute = Math.floor(minutes / 5) * 5 + 5;
-  const targetMinute = (nextRefreshMinute + 1) % 60;
+  const targetMinute = nextRefreshMinute % 60;
 
   const nextRun = new Date(now);
-  nextRun.setMinutes(targetMinute, 0, 0); // Set to target minute, 0 seconds
+  nextRun.setMinutes(targetMinute, 10, 0); // Set to target minute, 45 seconds
 
   // If target time has passed in current hour, move to next hour
   if (nextRun <= now) {
@@ -287,7 +287,7 @@ function scheduleNextRun() {
 
   console.log(
     `Next stock refresh expected at: ${new Date(
-      nextRun.getTime() - 60000
+      nextRun.getTime() - 10000
     ).toLocaleTimeString()}`
   );
   console.log(
@@ -330,5 +330,5 @@ scrapeOnce()
   });
 
 console.log(
-  "Script started - will fetch data 1 minute after each stock refresh..."
+  "Script started - will fetch data 45 seconds after each stock refresh..."
 );
