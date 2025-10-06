@@ -223,20 +223,19 @@ async function scrapeOnce() {
     }
 
     const esc = (s) => String(s || "").replace(/"/g, '""');
+    const specialItems = [
+      "Tomatrio",
+      "Shroombino",
+      "Mr Carrot",
+      "Mango",
+      "Carnivorous Plant",
+      "Cocotank",
+    ];
+
     const lines =
       seeds
         .map((s) => {
-          if (
-            s.item in
-            [
-              "Tomatrio",
-              "Shroombino",
-              "Mr Carrot",
-              "Mango",
-              "Carnivorous Plant",
-              "Cocotank",
-            ]
-          ) {
+          if (specialItems.includes(s.item)) {
             // Special handling for specific items
             return `${ts},"${esc(s.item) + "@"}",${esc(s.qty)},"${esc(
               s.img_alt
