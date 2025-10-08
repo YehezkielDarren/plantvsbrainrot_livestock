@@ -118,7 +118,7 @@ async function scrapeOnce() {
         }
 
         if (d instanceof Date && !isNaN(d.getTime())) {
-          console.log(`Parsed timestamp: ${raw} -> ${d.toISOString()}`);
+          // console.log(`Parsed timestamp: ${raw} -> ${d.toISOString()}`);
           return d;
         }
       }
@@ -152,9 +152,9 @@ async function scrapeOnce() {
     // debug: log selection info
     try {
       const chosenDate = getMsgDate(msg) || new Date();
-      console.log(
-        `Final chosen message timestamp: ${chosenDate.toISOString()}`
-      );
+      // console.log(
+      //   `Final chosen message timestamp: ${chosenDate.toISOString()}`
+      // );
     } catch (e) {
       console.error("Error getting chosen date:", e.message);
     }
@@ -181,7 +181,7 @@ async function scrapeOnce() {
     }
     const ts = msgDate.toISOString();
 
-    console.log(`Processing message with timestamp: ${ts}`);
+    // console.log(`Processing message with timestamp: ${ts}`);
 
     // Read last saved timestamp from CSV (last non-header line)
     let lastSavedTs = null;
@@ -213,7 +213,7 @@ async function scrapeOnce() {
 
         if (timeDiff <= 0) {
           console.log(
-            `Message timestamp ${ts} is not newer than last saved ${lastSavedTs}; skipping`
+            `Message timestamp ${ts} is not newer than last saved ${lastSavedTs};\nskipping`
           );
           return;
         }
@@ -231,10 +231,12 @@ async function scrapeOnce() {
       "Carnivorous Plant",
       "Cocotank",
     ];
+    const passedItems = ["Cactus", "Strawberry"];
 
-    const lines =
-      seeds
-        .map((s) => {
+    const validLines = seeds
+      .map((s) => {
+        const isPassed = passedItems.includes(s.item);
+        if (!isPassed) {
           if (specialItems.includes(s.item)) {
             // Special handling for specific items
             return `${ts},"${esc(s.item) + "@"}",${esc(s.qty)},"${esc(
@@ -245,14 +247,22 @@ async function scrapeOnce() {
               s.img_alt
             )}","${esc(s.img_src)}"`;
           }
-        })
-        .join("\n") + "\n";
-    fs.appendFileSync(OUTPUT_CSV, lines, "utf8");
-    console.log(
-      `[${new Date().toLocaleString()}] Saved ${
-        seeds.length
-      } seed rows to ${OUTPUT_CSV} (ts=${ts})`
-    );
+        }
+        return null;
+      })
+      .filter((line) => line !== null);
+
+    if (validLines.length > 0) {
+      const lines = validLines.join("\n") + "\n";
+      fs.appendFileSync(OUTPUT_CSV, lines, "utf8");
+      console.log(
+        `[${new Date().toLocaleString()}] Saved ${
+          validLines.length
+        } seed rows to pvb_data.csv (ts=${ts})`
+      );
+    } else {
+      console.log("No valid seeds to save (all items were passed/filtered)");
+    }
   } catch (err) {
     console.error("Scrape failed:", err && err.message ? err.message : err);
   }
@@ -290,11 +300,11 @@ function scheduleNextRun() {
       nextRun.getTime() - 10000
     ).toLocaleTimeString()}`
   );
-  console.log(
-    `Next API fetch scheduled at: ${nextRun.toLocaleTimeString()} (in ${Math.round(
-      delay / 1000
-    )}s)`
-  );
+  // console.log(
+  //   `Next API fetch scheduled at: ${nextRun.toLocaleTimeString()} (in ${Math.round(
+  //     delay / 1000
+  //   )}s)`
+  // );
 
   setTimeout(() => {
     console.log(
